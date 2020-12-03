@@ -64,7 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\bunnyMoving.cs" />
-    <Compile Include="Assets\Scripts\Ecosystem3.cs" />
+    <Compile Include="Assets\Scripts\EcosystemCh1.cs" />
+    <Compile Include="Assets\Scripts\EcosystemCh2.cs" />
+    <Compile Include="Assets\Scripts\EcosystemCh3.cs" />
     <Compile Include="Assets\Scripts\simpleBunnyMoving.cs" />
     <Compile Include="Assets\Scripts\Wolf.cs" />
     <Compile Include="Assets\Scripts\WorldCreation.cs" />

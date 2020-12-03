@@ -7,7 +7,7 @@ public class bunnyMoving : MonoBehaviour
 {
     public Transform Predator;
     float mSpeed = 5f;
-    bunny Bunny;
+    //bunny Bunny;
     public int maxPosX;
     public int maxPosZ;
     public int minPosX;
@@ -87,58 +87,3 @@ public class bunnyMoving : MonoBehaviour
 
 
 
-public class bunny
-{
-    private Vector3 location, velocity, acceleration;
-    private float topSpeed;
-
-    private GameObject bunnyGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-
-    public bunny()
-    {
-        location = Vector3.zero;
-        velocity = Vector3.zero;
-        acceleration = new Vector3(.0f, 10f, .0f);
-
-        topSpeed = 20f;
-
-    }
-
-    public void Motion()
-    {
-        //velocity += acceleration * Time.deltaTime;
-
-        // velocity = Vector3.ClampMagnitude(velocity, topSpeed);
-
-        // location += velocity * Time.deltaTime;
-
-
-        // bunnyGO.transform.position = new Vector3(location.x, location.y, location.z);
-        float bunnyHop = Mathf.PerlinNoise(.0f, 5f);
-        Debug.Log(location.y);
-        if (location.y > 3)
-        {
-            velocity -= acceleration * Time.deltaTime;
-            velocity = Vector3.ClampMagnitude(velocity, topSpeed);
-
-
-            location += velocity * Time.deltaTime;
-            Debug.Log(bunnyHop);
-
-            // Debug.Log(location.y);
-        }
-        else if (location.y < 5)
-        {
-            velocity += acceleration * Time.deltaTime;
-
-            velocity = Vector3.ClampMagnitude(velocity, topSpeed);
-
-            location += velocity * Time.deltaTime;
-            // Debug.Log(location.y);
-            Debug.Log(bunnyHop);
-        }
-
-        bunnyGO.transform.position = new Vector3(location.x, location.y, location.z);
-
-    }
-}
