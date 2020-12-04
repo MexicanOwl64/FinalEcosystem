@@ -17,8 +17,9 @@ public class EcosystemCh2 : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        Vector2 force = a.Attract(m.body); // Apply the attraction from the Attractor on the Mover
-       // Vector2 force = a.Repelling(attractor.body);
+        Vector3 force = a.Attract(m.body); // Apply the attraction from the Attractor on the Mover
+        Vector3 repelForce = a.Repelling(m.body);
+        a.ApplyRepel(repelForce);
         m.ApplyForce(force);
         m.Update();
         a.Update();
@@ -29,17 +30,19 @@ public class EcosystemCh2 : MonoBehaviour
 
 public class Attractor
 {
+    public Transform transform;
     public float mass;
     private Vector3 location;
     private float G;
     public Rigidbody body;
-
+    private Vector3 minimumPos, maximumPos;
     private GameObject attractor;
+    
 
     public Attractor()
     {
         attractor = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        attractor.GetComponent<SphereCollider>().enabled = false;
+        attractor.GetComponent<SphereCollider>().enabled = true;
 
         attractor.AddComponent<Rigidbody>();
         body = attractor.GetComponent<Rigidbody>();
@@ -52,27 +55,13 @@ public class Attractor
         G = 9.8f;
     }
 
-    public Vector3 Repelling(Rigidbody attractor)
-    {
-        Vector3 force = body.position - attractor.position;
-        float distance = force.magnitude;
-
-        // Remember we need to constrain the distance so that our circle doesn't spin out of control
-        distance = Mathf.Clamp(distance, 5f, 25f);
-
-        force.Normalize();
-        float strength = G * (body.mass * attractor.mass) / (distance * distance);
-        force *= strength;
-        return force;
-    }
-
     public Vector3 Attract(Rigidbody m)
     {
         Vector3 force = body.position - m.position;
         float distance = force.magnitude;
 
         // Remember we need to constrain the distance so that our circle doesn't spin out of control
-        distance = Mathf.Clamp(distance, 5f, 25f);
+        distance = Mathf.Clamp(distance, 5f, distance);
 
         force.Normalize();
         float strength = G * (body.mass * m.mass) / (distance * distance);
@@ -80,15 +69,49 @@ public class Attractor
         return force;
     }
 
-    public void ApplyForce(Vector2 force)
+    public Vector3 Repelling(Rigidbody m)
     {
-        body.AddForce(force, ForceMode.Force);
+        Vector3 repelForce = body.position + m.position;
+        float distance = repelForce.magnitude;
+
+        // Remember we need to constrain the distance so that our circle doesn't spin out of control
+        distance = Mathf.Clamp(distance, 5f, 25f);
+
+        repelForce.Normalize();
+        float strength = G / (body.mass / m.mass) * (distance / distance);
+        repelForce *= strength;
+        return repelForce;
     }
 
     public void Update()
     {
-        attractor.transform.position = location;
+        CheckEdges();
     }
+
+    public void ApplyRepel(Vector3 repelForce)
+    {
+        body.AddForce(repelForce, ForceMode.Force);
+    }
+
+    public void CheckEdges()
+    {
+        Vector3 velocity = body.velocity;
+        float mSpeed = 5f;
+        if (transform.position.x > maximumPos.x || transform.position.x < minimumPos.x)
+        {
+            velocity.x *= mSpeed * Time.deltaTime;
+        }
+        if (transform.position.y > maximumPos.y || transform.position.y < minimumPos.y)
+        {
+            velocity.y *= mSpeed * Time.deltaTime;
+        }
+        if (transform.position.z > maximumPos.z || transform.position.z < minimumPos.z)
+        {
+            velocity.z *= mSpeed * Time.deltaTime;
+        }
+        body.velocity = velocity;
+    }
+
 }
 
 
@@ -99,7 +122,7 @@ public class Mover2_6
     public Transform transform;
     public Rigidbody body;
 
-    private Vector2 minimumPos, maximumPos;
+    private Vector3 minimumPos, maximumPos;
 
     private GameObject mover;
 
@@ -109,20 +132,21 @@ public class Mover2_6
         transform = mover.transform;
         mover.AddComponent<Rigidbody>();
         body = mover.GetComponent<Rigidbody>();
-        body.useGravity = true;
+        body.GetComponent<SphereCollider>().enabled = true;
+        body.useGravity = false;
         Renderer renderer = mover.GetComponent<Renderer>();
         renderer.material = new Material(Shader.Find("Diffuse"));
         renderer.material.color = Color.white;
 
-        body.mass = 10;
-        transform.position = new Vector2(5, 0); // Default location
+
+        body.mass = 20;
+        transform.position = new Vector3(5, 0,5); // Default location
         findWindowLimits();
     }
 
-    public void ApplyForce(Vector2 force)
+    public void ApplyForce(Vector3 force)
     {
         body.AddForce(force, ForceMode.Force);
-        
     }
 
     public void Update()
@@ -132,23 +156,26 @@ public class Mover2_6
 
     public void CheckEdges()
     {
-        Vector2 velocity = body.velocity;
+        Vector3 velocity = body.velocity;
+        float mSpeed = 5f;
         if (transform.position.x > maximumPos.x || transform.position.x < minimumPos.x)
         {
-            velocity.x *= -1;
+            velocity.x *= mSpeed * Time.deltaTime;
         }
         if (transform.position.y > maximumPos.y || transform.position.y < minimumPos.y)
         {
-            velocity.y *= -1;
+            velocity.y *= mSpeed * Time.deltaTime;
+        }
+        if (transform.position.z > maximumPos.z || transform.position.z < minimumPos.z)
+        {
+            velocity.z *= mSpeed * Time.deltaTime;
         }
         body.velocity = velocity;
     }
 
     private void findWindowLimits()
     {
-        Camera.main.orthographic = true;
-        Camera.main.orthographicSize = 4;
-        minimumPos = Camera.main.ScreenToWorldPoint(Vector2.zero);
-        maximumPos = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+        
     }
 }
+

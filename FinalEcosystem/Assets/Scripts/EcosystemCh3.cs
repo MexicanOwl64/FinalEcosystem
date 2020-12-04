@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ecosystem3 : MonoBehaviour
+public class EcosystemCh3 : MonoBehaviour
 {
     List<oscillator> oscilattors = new List<oscillator>();
+
+    public Rigidbody body;
+    private GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
     void Start()
     {
@@ -53,7 +56,7 @@ public class oscillator
     {
         findWindowLimits();
         angle = Vector2.zero;
-        velocity = new Vector2(Random.Range(-.05f, .05f), Random.Range(-0.05f, 0.05f));
+        velocity = new Vector2(Random.Range(-.05f, .05f), Random.Range(-0.5f, 0.5f));
         amplitude = new Vector2(Random.Range(-maximumPos.x / 2, maximumPos.x / 2), Random.Range(-maximumPos.y / 2, maximumPos.y / 2));
 
         //We need to create a new material for WebGL
